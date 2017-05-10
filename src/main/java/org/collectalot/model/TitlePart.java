@@ -1,6 +1,6 @@
 package org.collectalot.model;
 
-public class TitlePath {
+public class TitlePart {
 	private String name;
 	private long id;
 
