@@ -9,20 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.ImportResource;
 
-@SpringBootApplication(scanBasePackages={"org.collectalot.service"})
+@SpringBootApplication(scanBasePackages={"org.collectalot.service", "org.collectalot.config"})
 //@ImportResource("classpath:spring-config.xml")
 public class Configurator {
-	@Value("${ENV}")
-	private String env;
     public static void main(String[] args) {
         SpringApplication.run(Configurator.class, args);
-    }
-    @Bean
-    public TitlePartInterface titlePartDAO() {
-    	if("dev".equals(env)) {
-    		return new TitlePartDAOMock();
-    	} else {
-    		return new TitlePartDAO();
-    	}
     }
 }

@@ -32,7 +32,7 @@ public class TitlePathService {
 	@Value("${SW_VERSION}")
 	private String swVersion;
 	
-	@Autowired(required=false)
+	@Autowired
 	@Qualifier("titlePartDAO")
 	private TitlePartInterface mTitlePartDAO;
 	
