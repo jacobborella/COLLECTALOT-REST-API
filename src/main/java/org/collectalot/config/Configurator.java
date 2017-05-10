@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication(scanBasePackages={"org.collectalot.service"})
 @Configuration
-@ImportResource("classpath:resources/spring-config.xml")
+@ImportResource("file:src/main/java/resources/spring-config.xml")
 public class Configurator {
     public static void main(String[] args) {
         SpringApplication.run(Configurator.class, args);
