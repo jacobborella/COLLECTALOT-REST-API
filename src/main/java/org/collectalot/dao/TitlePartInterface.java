@@ -5,5 +5,5 @@ import org.collectalot.model.TitlePart;
 public interface TitlePartInterface {
 
 	TitlePart getTitlePart(long id);
-	TitlePart getChildren(long parentId);
+	TitlePart[] getChildren(long parentId);
 }

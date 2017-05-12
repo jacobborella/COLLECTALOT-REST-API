@@ -27,8 +27,8 @@ import org.collectalot.dao.TitlePartInterface;
 import org.collectalot.model.TitlePart;
 
 @Controller
-@RequestMapping("/title-path")
-public class TitlePathService {
+@RequestMapping("/title-part")
+public class TitlePartService {
 	
 	@Value("${SW_VERSION}")
 	private String swVersion;
@@ -39,11 +39,11 @@ public class TitlePathService {
 	
 	@RequestMapping(path="/{id}", method=RequestMethod.GET)
     public @ResponseBody TitlePart getTitlePart(@PathVariable(value="id") Long id, HttpServletResponse  response) {
-		response.setHeader("api-version", swVersion);
+		if(response != null) response.setHeader("api-version", swVersion);
         return mTitlePartDAO.getTitlePart(id);
     }
 	@RequestMapping(path="/children/{id}", method=RequestMethod.GET)
-	public @ResponseBody TitlePart getTitlePartChildren(@PathVariable(value="id") Long id) {
+	public @ResponseBody TitlePart[] getTitlePartChildren(@PathVariable(value="id") Long id) {
 		return mTitlePartDAO.getChildren(id);
 	}
 	

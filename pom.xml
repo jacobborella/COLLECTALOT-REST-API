@@ -42,7 +42,8 @@
             <includes>
                 <include>**/*.properties</include>
             </includes>
-        </resource></resources>
+        </resource>
+    </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
