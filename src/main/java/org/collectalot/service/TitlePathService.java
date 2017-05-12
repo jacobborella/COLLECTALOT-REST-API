@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,11 +37,21 @@ public class TitlePathService {
 	@Qualifier("titlePartDAO")
 	private TitlePartInterface mTitlePartDAO;
 	
-	@RequestMapping(method=RequestMethod.GET)
-    public @ResponseBody TitlePart getTitlePath(@RequestParam(value="id", required=false) Long id, HttpServletResponse  response) {
+	@RequestMapping(path="/{id}", method=RequestMethod.GET)
+    public @ResponseBody TitlePart getTitlePart(@PathVariable(value="id") Long id, HttpServletResponse  response) {
 		response.setHeader("api-version", swVersion);
         return mTitlePartDAO.getTitlePart(id);
-    }/*
+    }
+	@RequestMapping(path="/children/{id}", method=RequestMethod.GET)
+	public @ResponseBody TitlePart getTitlePartChildren(@PathVariable(value="id") Long id) {
+		return mTitlePartDAO.getChildren(id);
+	}
+	
+	
+	
+	
+	
+	/*
 	public static void main(String[] args) {
 		boolean insert = false;
 		MongoClient mongo = new MongoClient( "localhost" , 27017 );
