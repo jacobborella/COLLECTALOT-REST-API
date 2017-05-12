@@ -1,7 +1,6 @@
 package org.collectalot.service;
 
-import org.collectalot.dao.TitlePartDAOMock;
-import org.collectalot.dao.TitlePartInterface;
+import org.collectalot.dao.TitlePartDAO;
 import org.collectalot.model.TitlePart;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +16,7 @@ public class TitlePartServiceTest {
 	@InjectMocks
     private TitlePartService service;
 	@Mock
-	private TitlePartInterface mTitlePartDAO = new TitlePartDAOMock();
+	private TitlePartDAO mTitlePartDAO = new TitlePartDAO();
 
     @Before
     public void initMocks(){

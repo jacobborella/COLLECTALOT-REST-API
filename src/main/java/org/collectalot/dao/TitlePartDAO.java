@@ -4,11 +4,10 @@ import java.util.ArrayList;
 
 import org.collectalot.model.TitlePart;
 
-public class TitlePartDAO implements TitlePartInterface {
+public class TitlePartDAO {
 	/* (non-Javadoc)
 	 * @see org.collectalot.dao.TitlePartInterface#getTitlePart(long)
 	 */
-	@Override
 	public TitlePart getTitlePart(long id) {
 		if(id!=1) return null;
 		TitlePart titlePart = new TitlePart();
@@ -17,7 +16,6 @@ public class TitlePartDAO implements TitlePartInterface {
 		return titlePart;
 	}
 
-	@Override
 	public TitlePart[] getChildren(long parentId) {
 		ArrayList<TitlePart> children = new ArrayList<TitlePart>();
 		TitlePart titlePart;

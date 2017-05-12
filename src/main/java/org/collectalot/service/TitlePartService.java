@@ -23,7 +23,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.bson.Document;
-import org.collectalot.dao.TitlePartInterface;
+import org.collectalot.dao.TitlePartDAO;
 import org.collectalot.model.TitlePart;
 
 @Controller
@@ -34,8 +34,8 @@ public class TitlePartService {
 	private String swVersion;
 	
 	@Autowired
-	@Qualifier("titlePartDAO")
-	private TitlePartInterface mTitlePartDAO;
+//	@Qualifier("titlePartDAO")
+	private TitlePartDAO mTitlePartDAO;
 	
 	@RequestMapping(path="/{id}", method=RequestMethod.GET)
     public @ResponseBody TitlePart getTitlePart(@PathVariable(value="id") Long id, HttpServletResponse  response) {
