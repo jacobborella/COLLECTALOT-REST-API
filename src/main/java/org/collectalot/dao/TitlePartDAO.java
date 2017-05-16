@@ -88,6 +88,7 @@ public class TitlePartDAO {
 			                               mongoDBUser +":" +
 						                   mongoDBPasswd + "@" +
 						                   dbHost + ":" + dbPort + "/" + dbName);
+				System.out.println(dbUri);
 			}
 			mongo = new MongoClient(dbUri);
 			MongoDatabase db = mongo.getDatabase(dbCollectionName);
