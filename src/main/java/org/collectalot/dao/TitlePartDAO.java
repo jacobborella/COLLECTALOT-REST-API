@@ -87,10 +87,10 @@ public class TitlePartDAO {
 				dbUri = new MongoClientURI("mongodb://" + 
 			                               mongoDBUser +":" +
 						                   mongoDBPasswd + "@" +
-						                   dbHost + ":" + dbPort + "/" + dbCollectionName);
+						                   dbHost + ":" + dbPort + "/" + dbName);
 			}
 			mongo = new MongoClient(dbUri);
-			MongoDatabase db = mongo.getDatabase(dbName);
+			MongoDatabase db = mongo.getDatabase(dbCollectionName);
 			return op.query(db);
 		} finally {
 			if(mongo != null) mongo.close();
