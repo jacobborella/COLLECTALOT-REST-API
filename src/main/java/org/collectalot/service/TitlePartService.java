@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -35,7 +36,7 @@ public class TitlePartService {
 	public @ResponseBody TitlePart[] getTitlePartChildren(@PathVariable(value="id") String id) {
 		return mTitlePartDAO.getChildren(id);
 	}
-	@RequestMapping(path="children/{id}", method=RequestMethod.PUT)
+	@RequestMapping(path="children/{id}", method=RequestMethod.POST)
 	public @ResponseBody void insertTitlePartChildren(@PathVariable(value="id") String id, @RequestBody TitlePart tp) {
 		tp.setParentId(id);
 		mTitlePartDAO.insertTitlePart(tp);
@@ -50,10 +51,10 @@ public class TitlePartService {
         return mTitlePartDAO.getTitlePart(id);
     }
 	@RequestMapping(path="{id}", method=RequestMethod.DELETE)
-    public void deleteTitlePart(@PathVariable(value="id") Long id) {
-        mTitlePartDAO.deleteTitlePart(id);
+    public @ResponseBody void deleteTitlePart(@PathVariable(value="id") String id, @RequestParam(value="version") int version) {
+        mTitlePartDAO.deleteTitlePart(id, version);
     }
-	@RequestMapping(method=RequestMethod.PUT)
+	@RequestMapping(method=RequestMethod.POST)
 	public @ResponseBody void insertTitlePart(@RequestBody TitlePart tp) {
 		//TODO must be the titlepart with no parent
 		mTitlePartDAO.insertTitlePart(tp);

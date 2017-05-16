@@ -38,7 +38,7 @@ public class TitlePartServiceTest {
 	}
 	@Test
 	public void testDeleteTitlePart() {
-		service.deleteTitlePart(1L);
-		Mockito.verify(mTitlePartDAO).deleteTitlePart(1);
+		service.deleteTitlePart("foo", 1);
+		Mockito.verify(mTitlePartDAO).deleteTitlePart("foo", 1);
 	}
 }

@@ -44,7 +44,7 @@ public class TitlePartDAO {
 			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
 			FindIterable<Document> docs = collection.find(eq("_id", new ObjectId(id)));
 			Document doc = docs.first();
-			System.out.println(doc);
+			if(doc.getBoolean("deleted", false)) return null;
 			//TODO findes der ikke et framework til at mappe fra document til Java? såsom gson
 			//doc.toJson()
 			TitlePart tp = new TitlePart();
@@ -57,12 +57,18 @@ public class TitlePartDAO {
 	}
 	
 	public void insertTitlePart(TitlePart tp) {
-		Document doc =
-				new Document("parentId", tp.getParentId())
-				    .append("version", tp.getVersion())
-				    .append("name", tp.getName());
 		queryMongoDB(mongoDB -> {
-			mongoDB.getCollection("data").insertOne(doc);
+			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
+			//first search if the entry already exists
+			FindIterable<Document> docs = collection.find(and(eq("parentId", tp.getParentId()), eq("name", tp.getName())));
+			if(docs.iterator().hasNext()) throw new IllegalArgumentException("entry already exists");
+
+			//if entry doesn't exists -> insert it
+			Document doc =
+			new Document("parentId", tp.getParentId())
+			    .append("version", tp.getVersion())
+			    .append("name", tp.getName());
+			collection.insertOne(doc);
 			return true;//dummy to get type resolved
 		});
 	}
@@ -81,6 +87,7 @@ public class TitlePartDAO {
 			for(Document doc: docs) {
 				//TODO findes der ikke et framework til at mappe fra document til Java? såsom gson
 				//doc.toJson()
+				if(doc.getBoolean("deleted", false)) continue;
 				TitlePart tp = new TitlePart();
 				tp.setId(doc.getObjectId("_id").toString());
 				tp.setVersion(doc.getInteger("version"));
@@ -93,8 +100,19 @@ public class TitlePartDAO {
 			return tpArr;
 		});
 	}
-	public void deleteTitlePart(long id) {
-		//TODO implement
+	public void deleteTitlePart(String id, int version) {
+		queryMongoDB(mongoDB -> {
+			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
+			FindIterable<Document> docs = collection.find(eq("_id", new ObjectId(id)));
+			Document doc = docs.first();
+			if(version != doc.getInteger("version")) {
+				throw new IllegalArgumentException("Version " + version + " is out of sync with database");
+			}
+			doc.append("deleted", true);
+			collection.replaceOne(eq("_id", new ObjectId(id)), doc);
+
+			return true;
+		});
 	}
 	
 	private Object queryMongoDB(MongoDBOperation op) {
