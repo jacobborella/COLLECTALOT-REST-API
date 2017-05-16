@@ -83,12 +83,12 @@ public class TitlePartDAO {
 		MongoClientURI dbUri;
 		try {
 			if(mongoDBUser == null||"".equals(mongoDBUser)) {
-				dbUri = new MongoClientURI("mongodb://" + dbHost + ":" + dbPort);
+				dbUri = new MongoClientURI("mongodb://" + dbHost + ":" + dbPort + "/" + dbName);
 			} else {
 				dbUri = new MongoClientURI("mongodb://" + 
 			                               mongoDBUser +":" +
 						                   mongoDBPasswd + "@" +
-						                   dbHost + ":" + dbPort);
+						                   dbHost + ":" + dbPort + "/" + dbName);
 			}
 
 			mongo = new MongoClient(dbUri);
