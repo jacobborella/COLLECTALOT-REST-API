@@ -44,7 +44,8 @@ public class TitlePartDAO {
 			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
 			FindIterable<Document> docs = collection.find(eq("_id", new ObjectId(id)));
 			Document doc = docs.first();
-			if(doc.getBoolean("deleted", false)) return null;
+			if(doc.getBoolean("deleted", false)) return null;//dont return deleted documents
+			
 			//TODO findes der ikke et framework til at mappe fra document til Java? såsom gson
 			//doc.toJson()
 			TitlePart tp = new TitlePart();
@@ -74,16 +75,12 @@ public class TitlePartDAO {
 	}
 
 	public TitlePart[] getChildren(String parentId) {
-		System.out.println("Get children: " + parentId);
 		return (TitlePart[]) queryMongoDB(mongoDB -> {
 			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
 			FindIterable<Document> docs;
 			ArrayList<TitlePart> tps = new ArrayList<TitlePart>();
-			if(parentId == null||"".equals(parentId)) {
-				docs = collection.find(eq("parentId", null));
-			} else {
-				docs = collection.find(eq("parentId", parentId));
-			}
+			docs = collection.find(eq("parentId", parentId));
+
 			for(Document doc: docs) {
 				//TODO findes der ikke et framework til at mappe fra document til Java? såsom gson
 				//doc.toJson()
