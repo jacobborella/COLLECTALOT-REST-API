@@ -83,14 +83,13 @@ public class TitlePartDAO {
 		MongoClientURI dbUri;
 		try {
 			if(mongoDBUser == null||"".equals(mongoDBUser)) {
-				dbUri = new MongoClientURI("mongodb://" + dbHost + ":" + dbPort + "/" + dbCollectionName);
+				dbUri = new MongoClientURI("mongodb://" + dbHost + ":" + dbPort);
 			} else {
 				dbUri = new MongoClientURI("mongodb://" + 
 			                               mongoDBUser +":" +
 						                   mongoDBPasswd + "@" +
-						                   dbHost + ":" + dbPort + "/" + dbName);
+						                   dbHost + ":" + dbPort);
 			}
-			System.out.println("vvvvvvvvvvvvv" + dbUri);
 
 			mongo = new MongoClient(dbUri);
 			MongoDatabase db = mongo.getDatabase(dbName);
