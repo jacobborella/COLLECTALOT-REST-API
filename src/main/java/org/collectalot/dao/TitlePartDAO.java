@@ -40,6 +40,7 @@ public class TitlePartDAO {
 	 * @see org.collectalot.dao.TitlePartInterface#getTitlePart(long)
 	 */
 	public TitlePart getTitlePart(String id) {
+		System.out.println("ID is " + id);
 		return (TitlePart) queryMongoDB(mongoDB -> {
 			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
 			FindIterable<Document> docs = collection.find(eq("_id", new ObjectId(id)));
@@ -88,10 +89,11 @@ public class TitlePartDAO {
 			                               mongoDBUser +":" +
 						                   mongoDBPasswd + "@" +
 						                   dbHost + ":" + dbPort + "/" + dbName);
-				System.out.println(dbUri);
 			}
+			System.out.println("vvvvvvvvvvvvv" + dbUri);
+
 			mongo = new MongoClient(dbUri);
-			MongoDatabase db = mongo.getDatabase(dbCollectionName);
+			MongoDatabase db = mongo.getDatabase(dbName);
 			return op.query(db);
 		} finally {
 			if(mongo != null) mongo.close();
