@@ -24,21 +24,38 @@ public class TitlePartService {
 //	@Qualifier("titlePartDAO")
 	private TitlePartDAO mTitlePartDAO;
 	
-	@RequestMapping(path="/{id}", method=RequestMethod.GET)
+	/*
+	 * Operations regarding children
+	 */
+	@RequestMapping(path="children", method=RequestMethod.GET)
+	public @ResponseBody TitlePart[] getTitlePartChildren() {
+		return mTitlePartDAO.getChildren(null);
+	}
+	@RequestMapping(path="children/{id}", method=RequestMethod.GET)
+	public @ResponseBody TitlePart[] getTitlePartChildren(@PathVariable(value="id") String id) {
+		return mTitlePartDAO.getChildren(id);
+	}
+	@RequestMapping(path="children/{id}", method=RequestMethod.PUT)
+	public @ResponseBody void insertTitlePartChildren(@PathVariable(value="id") String id, @RequestBody TitlePart tp) {
+		tp.setParentId(id);
+		mTitlePartDAO.insertTitlePart(tp);
+	}
+
+	/*
+	 * Operations regarding title-part
+	 */
+	@RequestMapping(path="{id}", method=RequestMethod.GET)
     public @ResponseBody TitlePart getTitlePart(@PathVariable(value="id") String id, HttpServletResponse  response) {
 		if(response != null) response.setHeader("api-version", swVersion);
         return mTitlePartDAO.getTitlePart(id);
     }
-	@RequestMapping(path="/children/{id}", method=RequestMethod.GET)
-	public @ResponseBody TitlePart[] getTitlePartChildren(@PathVariable(value="id") String id) {
-		return mTitlePartDAO.getChildren(id);
-	}
-	@RequestMapping(path="/{id}", method=RequestMethod.DELETE)
+	@RequestMapping(path="{id}", method=RequestMethod.DELETE)
     public void deleteTitlePart(@PathVariable(value="id") Long id) {
         mTitlePartDAO.deleteTitlePart(id);
     }
 	@RequestMapping(method=RequestMethod.PUT)
 	public @ResponseBody void insertTitlePart(@RequestBody TitlePart tp) {
+		//TODO must be the titlepart with no parent
 		mTitlePartDAO.insertTitlePart(tp);
 	}
 }

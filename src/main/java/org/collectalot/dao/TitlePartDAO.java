@@ -40,7 +40,6 @@ public class TitlePartDAO {
 	 * @see org.collectalot.dao.TitlePartInterface#getTitlePart(long)
 	 */
 	public TitlePart getTitlePart(String id) {
-		System.out.println("ID is " + id);
 		return (TitlePart) queryMongoDB(mongoDB -> {
 			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
 			FindIterable<Document> docs = collection.find(eq("_id", new ObjectId(id)));
@@ -69,10 +68,30 @@ public class TitlePartDAO {
 	}
 
 	public TitlePart[] getChildren(String parentId) {
-		ArrayList<TitlePart> children = new ArrayList<TitlePart>();
-		TitlePart[] tpa = new TitlePart[children.size()];
-		children.toArray(tpa);
-		return tpa;
+		System.out.println("Get children: " + parentId);
+		return (TitlePart[]) queryMongoDB(mongoDB -> {
+			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
+			FindIterable<Document> docs;
+			ArrayList<TitlePart> tps = new ArrayList<TitlePart>();
+			if(parentId == null||"".equals(parentId)) {
+				docs = collection.find(eq("parentId", null));
+			} else {
+				docs = collection.find(eq("parentId", parentId));
+			}
+			for(Document doc: docs) {
+				//TODO findes der ikke et framework til at mappe fra document til Java? såsom gson
+				//doc.toJson()
+				TitlePart tp = new TitlePart();
+				tp.setId(doc.getObjectId("_id").toString());
+				tp.setVersion(doc.getInteger("version"));
+				tp.setParentId(doc.getString("parentId"));
+				tp.setName(doc.getString("name"));
+				tps.add(tp);
+			}
+			TitlePart[] tpArr = new TitlePart[tps.size()];
+			tps.toArray(tpArr);
+			return tpArr;
+		});
 	}
 	public void deleteTitlePart(long id) {
 		//TODO implement
