@@ -15,6 +15,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 public class TitlePartServiceTest {
 	@InjectMocks
     private TitlePartService service;
+
 	@Mock
 	private TitlePartDAO mTitlePartDAO = new TitlePartDAO();
 
@@ -26,13 +27,18 @@ public class TitlePartServiceTest {
 	
 	
 	@Test
-	public void doit() {
+	public void testGetTitlePart() {
 		TitlePart tp = new TitlePart();
-		tp.setId(1);
+		tp.setId("1");
 		tp.setName("foo");
-		Mockito.when(mTitlePartDAO.getTitlePart(1)).thenReturn(tp);
-		TitlePart tpRes = service.getTitlePart(1L, null);
-		assert tpRes.getId() == 1;
+		Mockito.when(mTitlePartDAO.getTitlePart("1")).thenReturn(tp);
+		TitlePart tpRes = service.getTitlePart("1", null);
+		assert "1".equals(tpRes.getId());
 		assert "foo".equals(tpRes.getName());
+	}
+	@Test
+	public void testDeleteTitlePart() {
+		service.deleteTitlePart(1L);
+		Mockito.verify(mTitlePartDAO).deleteTitlePart(1);
 	}
 }

@@ -2,15 +2,15 @@ package org.collectalot.model;
 
 public class TitlePart {
 	private String name;
-	private long id;
-	private long parentId;
+	private String id;
+	private String parentId;
 	private int version;
 
-	public long getParentId() {
+	public String getParentId() {
 		return parentId;
 	}
 
-	public void setParentId(long parentId) {
+	public void setParentId(String parentId) {
 		this.parentId = parentId;
 	}
 
@@ -22,11 +22,11 @@ public class TitlePart {
 		this.version = version;
 	}
 
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
