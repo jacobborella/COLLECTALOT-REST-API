@@ -1,0 +1,38 @@
+node('maven') {
+    stage 'Deploy dev'
+    
+    mongodb_user_dev="mongouser"
+    mongodb_paswd_dev="password"
+    //clean project
+    sh "oc project dev"
+    sh "oc delete secret,dc,is,bc,svc,route,configmaps --all -n dev"
+    
+    //deploy mongodb and ensure it's running before continuing
+    sh "oc new-app mongodb-ephemeral -p MONGODB_USER=" + 
+        mongodb_user_dev + " -p MONGODB_PASSWORD=" +
+        mongodb_paswd_dev +
+        " -n dev"
+    openshiftVerifyService namespace: 'dev', svcName: 'mongodb'
+    
+    //build source code
+    git 'https://github.com/jacobborella/COLLECTALOT-REST-API'
+    sh "mvn install -Dspring.profiles.active=dev -DMONGODB_USER=" +
+    mongodb_user_dev +
+    " -DMONGODB_PASSWORD=" +
+    mongodb_paswd_dev
+    
+    //setup config file
+    sh "sed -i 's/MONGODB_USER=/MONGODB_USER=" + mongodb_user_dev + "/g' target/classes/application-dev.properties"
+    sh "sed -i 's/MONGODB_PASSWORD=/MONGODB_PASSWORD=" + mongodb_paswd_dev + "/g' target/classes/application-dev.properties"
+    sh "oc create configmap rest-api-properties --from-file=target/classes/application-dev.properties -n dev"
+
+
+    sh "oc new-build --binary=true --name=collectalot-rest -i=redhat-openjdk18-openshift -n dev"
+    sh "oc start-build collectalot-rest --from-dir=. --follow -n dev"
+    sh "oc new-app collectalot-rest JAVA_OPTIONS='-Dspring.profiles.active=dev' -n dev"
+    openshiftVerifyDeployment depCfg: 'collectalot-rest', namespace: 'dev'
+    sh "oc volume dc/collectalot-rest --add -t configmap  -m /deployments/config/ --name=rest-api-properties --configmap-name=rest-api-properties -n dev"
+   
+    sh "oc expose service collectalot-rest -n dev"
+    openshiftVerifyService namespace: 'dev', svcName: 'collectalot-rest'
+}
