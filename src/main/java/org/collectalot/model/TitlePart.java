@@ -5,6 +5,15 @@ public class TitlePart {
 	private String id;
 	private String parentId;
 	private int version;
+	private String owner;//id of the owner of the collection
+
+	public String getOwner() {
+		return owner;
+	}
+
+	public void setOwner(String owner) {
+		this.owner = owner;
+	}
 
 	public String getParentId() {
 		return parentId;

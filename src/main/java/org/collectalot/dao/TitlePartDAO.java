@@ -15,6 +15,7 @@ import org.collectalot.model.TitlePart;
 import org.springframework.beans.factory.annotation.Value;
 
 public class TitlePartDAO {
+	private String COLLECTION_OWNER = "jb";//TODO skal sættes baseret på et login (multitenant)
 	interface MongoDBOperation {
 		Object query(MongoDatabase db);
 	}
@@ -45,6 +46,10 @@ public class TitlePartDAO {
 			FindIterable<Document> docs = collection.find(eq("_id", new ObjectId(id)));
 			Document doc = docs.first();
 			if(doc.getBoolean("deleted", false)) return null;//dont return deleted documents
+			if(!COLLECTION_OWNER.equals(doc.get("owner"))) {
+				throw new IllegalAccessError("User " + COLLECTION_OWNER + 
+						                     " trying to illegally access data getTitlePart(" + id + ").");
+			}
 			
 			//TODO findes der ikke et framework til at mappe fra document til Java? såsom gson
 			//doc.toJson()
@@ -53,6 +58,7 @@ public class TitlePartDAO {
 			tp.setVersion(doc.getInteger("version"));
 			tp.setParentId(doc.getString("parentId"));
 			tp.setName(doc.getString("name"));
+			tp.setOwner(doc.getString("owner"));
 			return tp;
 		});
 	}
@@ -67,8 +73,9 @@ public class TitlePartDAO {
 			//if entry doesn't exists -> insert it
 			Document doc =
 			new Document("parentId", tp.getParentId())
-			    .append("version", tp.getVersion())
-			    .append("name", tp.getName());
+			    .append("version", 1)
+			    .append("name", tp.getName())
+			    .append("owner", COLLECTION_OWNER);
 			collection.insertOne(doc);
 			return true;//dummy to get type resolved
 		});
@@ -85,11 +92,16 @@ public class TitlePartDAO {
 				//TODO findes der ikke et framework til at mappe fra document til Java? såsom gson
 				//doc.toJson()
 				if(doc.getBoolean("deleted", false)) continue;
+				if(!COLLECTION_OWNER.equals(doc.getString("owner"))) {
+					throw new IllegalAccessError("User " + COLLECTION_OWNER + 
+							                     " trying to illegally access data getChildren(" + parentId + ").");
+				}
 				TitlePart tp = new TitlePart();
 				tp.setId(doc.getObjectId("_id").toString());
 				tp.setVersion(doc.getInteger("version"));
 				tp.setParentId(doc.getString("parentId"));
 				tp.setName(doc.getString("name"));
+				tp.setOwner(doc.getString("owner"));
 				tps.add(tp);
 			}
 			TitlePart[] tpArr = new TitlePart[tps.size()];
@@ -104,6 +116,9 @@ public class TitlePartDAO {
 			Document doc = docs.first();
 			if(version != doc.getInteger("version")) {
 				throw new IllegalArgumentException("Version " + version + " is out of sync with database");
+			}
+			if(!COLLECTION_OWNER.equals(doc.getString("owner"))) {
+				throw new IllegalAccessError("User " + COLLECTION_OWNER + "  accessing object not owned deleteTitlePart(" + id + ").");
 			}
 			doc.append("deleted", true);
 			collection.replaceOne(eq("_id", new ObjectId(id)), doc);
@@ -131,5 +146,16 @@ public class TitlePartDAO {
 		} finally {
 			if(mongo != null) mongo.close();
 		}
+	}
+	/*
+	 * Findes af hensyn til tests, hvor det er nødvendigt at slette alt indhold af databasen før hver test. Er der
+	 * alternativer til denne tilgang. Risikoen er, at man kommer til at gøre det et sted, hvor denne metode ikke
+	 * ønskes kaldet (PROD), eller at man kommer til at udstille funktionen (sikkerhedsrisiko). 
+	 */
+	public void clearDB() {
+		queryMongoDB(mongoDB-> {
+			mongoDB.getCollection(dbCollectionName).deleteMany(eq("owner", "jb"));
+			return true;
+		});
 	}
 }
