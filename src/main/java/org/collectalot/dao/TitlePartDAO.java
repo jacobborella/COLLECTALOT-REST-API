@@ -67,7 +67,7 @@ public class TitlePartDAO {
 		queryMongoDB(mongoDB -> {
 			MongoCollection<Document> collection = mongoDB.getCollection(dbCollectionName);
 			//first search if the entry already exists
-			FindIterable<Document> docs = collection.find(and(eq("parentId", tp.getParentId()), eq("name", tp.getName())));
+			FindIterable<Document> docs = collection.find(and(eq("parentId", tp.getParentId()), eq("name", tp.getName()), not(eq("deleted", true))));
 			if(docs.iterator().hasNext()) throw new IllegalArgumentException("entry already exists");
 
 			//if entry doesn't exists -> insert it

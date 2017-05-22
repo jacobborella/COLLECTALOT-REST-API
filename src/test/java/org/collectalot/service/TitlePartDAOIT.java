@@ -63,6 +63,7 @@ public class TitlePartDAOIT {
 	}
 	@Test
 	public void testInsertTitlePart() {
+		//insert a titlepart, which already exists
 		try {
 			TitlePart tp = new TitlePart();
 			tp.setName("Comics & Stories");
@@ -72,5 +73,44 @@ public class TitlePartDAOIT {
 		} catch (Exception e) {
 			//do nothing working as expected
 		}
+		
+		//insert a titlepart
+		TitlePart tp = new TitlePart();
+		tp.setName("Asterix");
+		tp.setParentId(rootId);
+		titlePartDAO.insertTitlePart(tp);
+		TitlePart[] children = titlePartDAO.getChildren(rootId);
+		assert 3 == children.length;
+		assert "Asterix".equals(children[2].getName());
+	}
+	@Test
+	public void testDeleteTitlePart() {
+		//get children and verify number
+		TitlePart[] children = titlePartDAO.getChildren(rootId);
+		assert 2==children.length;
+		
+		//delete a TP with wrong version and verify failure
+		try {
+			titlePartDAO.deleteTitlePart(children[1].getId(), children[1].getVersion()+1);
+			assert false: "Delete with wrong version number didn't fail as expected";
+		} catch(Exception e) {
+			
+		}
+		try {
+			titlePartDAO.deleteTitlePart(children[1].getId(), children[1].getVersion()-1);
+			assert false: "Delete with wrong version number didn't fail as expected";
+		} catch(Exception e) {
+			
+		}
+		assert 2==titlePartDAO.getChildren(rootId).length;
+
+		//delete a TP and verify number of children
+		TitlePart deletedTP = children[0];
+		titlePartDAO.deleteTitlePart(deletedTP.getId(), deletedTP.getVersion());
+		assert 1==titlePartDAO.getChildren(rootId).length;
+		
+		//verify that you can insert TP again after a delete
+		deletedTP.setId(null);
+		titlePartDAO.insertTitlePart(deletedTP);
 	}
 }
